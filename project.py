@@ -28,6 +28,8 @@ documents = [re.sub('[^A-Za-z0-9]+', ' ', doc) for doc in documents]
 documents=[doc.lower() for doc in documents]
 documents=[re.sub("\s+"," ",doc) for doc in documents]
 
+
+
 # Tokenize(split) the sentences into words
 
 texts = [[text for text in doc.split()] for doc in documents]
