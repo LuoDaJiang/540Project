@@ -18,7 +18,7 @@ from distributed import Client
 
 TotalPath = "/Users/qwertyui/我爱学习/540/project/DataFinal/Cleaned_random200 (1).csv"
 savePath = "/Users/qwertyui/我爱学习/540/project/DataFinal/corpus.csv"
-savePath="/Users/qwertyui/我爱学习/540/project/DataFinal/tf-idf.csv"
+#savePath="/Users/qwertyui/我爱学习/540/project/DataFinal/tf-idf.csv"
 Total = pd.read_csv(TotalPath)
 Total.columns = [c.replace(' ', '_') for c in Total.columns]
 documents = Total['Consumer_complaint_narrative'].values.tolist()
@@ -52,6 +52,6 @@ tfidf_vectors = [tfidf[word] for word in mycorpus]
 output=Total[['Complaint_ID']].copy()
 output['corpus']=pd.Series( mycorpus )
 #output['tf-idf']=pd.Series( tfidf_vectors )
-output['label']=Total['Unnamed:_18'].map({'urgent': True, 'non-urgent': False})
+output['label']=Total['Unnamed:_18'].map({'urgent': 1, 'non-urgent': 0})
 
-output.to_csv(savePath)
+output.to_csv(savePath,index=False)
