@@ -11,16 +11,17 @@ if __name__ == '__main__':
     import csv
     from gensim.models import LdaModel, LdaMulticore
     from distributed import Client
+    from sklearn.cluster import KMeans
+    from gensim.matutils import corpus2dense, corpus2csc
 
     TotalPath = "/Users/qwertyui/我爱学习/540/project/DataFinal/Cleaned_random200 (1).csv"
     savePath = "/Users/qwertyui/我爱学习/540/project/DataFinal/tf-idf_random200.csv"
-    narrativepath = "/Users/qwertyui/我爱学习/540/project/DataFinal/narratives.csv"
+
 
     Total = pd.read_csv(TotalPath)
     Total.columns = [c.replace(' ', '_') for c in Total.columns]
-    na = Total['Consumer_complaint_narrative']
     # na.to_csv(savePath,index=False)
-    documents = na.values.tolist()
+    documents = Total['Consumer_complaint_narrative'].values.tolist()
     # documents=narrative[0:10]
 
     ###cleaning based on string
@@ -42,33 +43,40 @@ if __name__ == '__main__':
     # spell = SpellChecker()                                              #spell checker
     # texts = [[spell.correction(word) for word in text] for text in texts]#spell checker
 
+    ### get tf-idf
     dictionary = corpora.Dictionary(texts)
     mycorpus = [dictionary.doc2bow(doc, allow_update=True) for doc in texts]
-    # print(dictionary)
-    # print(dictionary.token2id)
-
+                                                        # print(dictionary)
+    print(dictionary.token2id)
     tfidf = models.TfidfModel(mycorpus)
-    vectors = [tfidf[word] for word in mycorpus]
-    with open(savePath, 'w') as f:
-        # using csv.writer method from CSV package
-        write = csv.writer(f)
+    tfidf_vectors = [tfidf[word] for word in mycorpus]
+    corpus_tfidf_dense = corpus2dense(mycorpus, 2 * len(dictionary), num_docs=len(mycorpus))
+    corpus_tfidf_sparse = corpus2csc(mycorpus, 2 * len(dictionary), num_docs=len(mycorpus))
 
-        write.writerow(['tf-idf'])
-        write.writerows(vectors)
+    ### cluster
+    km = KMeans(n_clusters=5)
+    km.fit(corpus_tfidf_dense.T)
+    clusters = km.labels_.tolist()
 
-    lda_model = LdaMulticore(corpus=mycorpus,
-                             id2word=dictionary,
-                             random_state=100,
-                             num_topics=7,
-                             passes=10,
-                             chunksize=1000,
-                             batch=False,
-                             alpha='asymmetric',
-                             decay=0.5,
-                             offset=64,
-                             eta=None,
-                             eval_every=0,
-                             iterations=100,
-                             gamma_threshold=0.001,
-                             per_word_topics=True)
+    ### save as csv
+    Total['Cluster']=pd.Series(clusters)
+    output = Total[['Complaint_ID','Cluster']].copy()
+    output['label'] = Total['Unnamed:_18'].map({'urgent': 1, 'non-urgent': 0})
+    output.to_csv(savePath, index=False)
+
+    # lda_model = LdaMulticore(corpus=mycorpus,
+    #                          id2word=dictionary,
+    #                          random_state=100,
+    #                          num_topics=7,
+    #                          passes=10,
+    #                          chunksize=1000,
+    #                          batch=False,
+    #                          alpha='asymmetric',
+    #                          decay=0.5,
+    #                          offset=64,
+    #                          eta=None,
+    #                          eval_every=0,
+    #                          iterations=100,
+    #                          gamma_threshold=0.001,
+    #                          per_word_topics=True)
 
