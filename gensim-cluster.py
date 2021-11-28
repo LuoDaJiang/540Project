@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
     ###cleaning based on string
     documents = [re.sub('[^A-Za-z0-9]+', ' ', doc) for doc in documents]  ###Remove Punctuations
-    # ocuments=[re.sub("X.*X", "", doc) for doc in documents]
+    documents=[re.sub("X1*", "", doc) for doc in documents]     ## remove XX/XX/XXXX
     documents = [doc.lower() for doc in documents]  ###Convert to lower case
     documents = [re.sub("\s+", " ", doc) for doc in documents]  ###Removing extra spaces
 
