@@ -133,3 +133,4 @@ for k in range(0,10):
     #timeSeries(k, path)
     location(k, path)
     print("wordcloud #",k," is saved")
+
