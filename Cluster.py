@@ -1,18 +1,11 @@
 from sklearn.mixture import GaussianMixture
-from wordcloud import WordCloud, STOPWORDS
 import pandas as pd
-from gensim import models
 from matplotlib import pyplot as plt, pyplot
 from sklearn.feature_extraction.text import TfidfVectorizer
 import re
-import nltk
-from nltk.stem import WordNetLemmatizer
-from sklearn.feature_extraction import text
 from sklearn.cluster import KMeans
 from yellowbrick.cluster import KElbowVisualizer
 import numpy as np
-import gensim
-from gensim import matutils
 
 
 #preprocessing and generate tf-id
@@ -32,8 +25,7 @@ print(1)
 
 def cleaning(s):
     s = s.lower()
-    #s=re.sub("x1*", "", s)              ## remove XX/XX/XXXX
-    s=re.sub("x{2}(.*)", "", s)
+    s=re.sub("x{2}(.*)", "", s)         ## remove XX/XX/XXXX
     s=re.sub('[^A-Za-z]+', ' ', s)      ## remove special characters,punctuation
     return s
 
@@ -91,12 +83,10 @@ def save_cluster(k_optimum,path):
     return Total
     # lda = models.ldamodel.LdaModel(corpus=matutils.Sparse2Corpus(tfidf), id2word=vectorizer.vocabulary_, num_topics=100)
 
+#########################################################################################################################################################
 
-# Total=pd.read_csv("/Users/qwertyui/Downloads/Cluster.csv")
-# Total['Date_received'] = pd.to_datetime(Total['Date_received'], infer_datetime_format=True)
-# Total['month']= pd.DatetimeIndex(Total['Date_received']).month
-# Total['month_year']=Total['Date_received'].dt.to_period('M')
-#save_tfidf(tfidf)
-#elbow_method()
-#k_optimum=gaussian_method('/Users/qwertyui/我爱学习/540/project/DataFinal/AIC.png')
-#save_cluster(k_optimum,savepath)
+save_tfidf(tfidf)
+elbow_method()
+k_optimum=10
+savepath="/Users/qwertyui/Downloads/Cluster.csv"
+save_cluster(k_optimum,savepath)
